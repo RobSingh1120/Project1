@@ -1,0 +1,133 @@
+1=> problem in updating admin profile.
+    # no field is in working condition
+
+2=> on dasboard Total
+     Wallet Withdraw Request
+    # Cash Wallet ->0 // amount should be first to show before arrow
+     BMCT Wallet 0 ->
+
+ 3=> In User List
+    List of all User.
+    #List of all Users.
+
+
+ 4=> In User View
+       User Detail
+    #User Details.
+
+
+5=>In User View
+   User Bmct Wallet
+   #User Bmct Wallet  : 0
+
+
+ 6=> In Appointment List
+   List of all Appointment.
+   #List of all Appointments.
+
+
+  7=> In Appointment List
+     # search bar have low space ( when we see placeholder inside it)
+
+
+8=>Transaction List
+   List of all Transaction.
+   #List of all Transactions.
+
+
+
+9=># Chat History is not working
+
+
+10=> In  User List
+
+  # if i reject a doctor due to some reasons after some time i want it back there is no option for undo it.
+
+
+
+  11=>10=> In  User List
+
+  # if i reject a Pharmacist due to some reasons after some time i want it back there is no option for undo it.
+
+  12=> User View
+    for Doctor
+  #User Referral Code // coming blank
+  #User Bmct Wallet  // coming blank
+
+  13=>User View
+    for Patient   
+    #User Referral Code  // coming blank
+    #User Bmct Wallet     // coming blank
+
+    14=>User View
+      for Pharmacist
+      # Contact Number    // coming blank
+       #User Bmct Wallet   // coming blank
+
+
+15=>User View
+       for Laboratory
+       #User Referral Code // coming blank
+       #User Bmct Wallet   // coming blank
+
+
+ 16=> in creating  Sub Admin
+   # name is taking space
+   # mobile no. i put more then 10 digits no valodation 
+   # on submission there is error 
+
+ 17=>In Edit Sub Admin
+   # taking space in name
+    # taking space in gmail
+   # mobile no i fill 9 digits, 11 digits  and there is no error
+   # Permission Options  // coming blank
+
+  18=>In  Sub Admin List
+    # block is not working
+
+   
+ 19=>in   View Sub Admin
+      # Permission Options  // coming blank
+
+ 20=>In Create Sub Admin
+    # taking space in name
+    # taking space in gmail
+   # mobile no i fill 9 digits, 11 digits  and there is no error
+
+
+ 21=> In User List
+   # reset button is necessery to reset search
+
+
+ 22-> In Appointment List
+  # reset button is necessery to reset search
+
+  23->In Transaction List
+   # placeholder should be define correctly 
+
+  24=>in Withdraw Requests List
+  # placeholder should be define correctly 
+
+  25=> In Cash Wallet Management List
+   # placeholder should be define correctly 
+
+  26=>In Cash Credit/Debit Transfer
+  # type-credit ( giving an error)
+
+   27=>In Cash Coin Credit/Debit Transfer
+  # type-credit ( giving an error)
+
+  28=> In Static Content
+
+ # edit submit is not working
+# delete is not working
+
+29=>In  Commission List
+List of all Commission.
+#List of all Commissions.
+# view is not working
+# approve is not working
+# reject is not working
+
+
+30=>#change password is not working

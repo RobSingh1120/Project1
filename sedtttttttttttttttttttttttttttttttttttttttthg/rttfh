@@ -1,0 +1,904 @@
+<?php
+
+namespace App\Http\Controllers\api;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\User;
+use App\user_profile;
+use App\device;
+use App\address;
+use App\rate;
+use App\treatment;
+use App\notification;
+use Validator;
+use Auth;
+
+use Illuminate\Support\Facades\Hash;
+
+
+class projectcontroller extends Controller
+{
+    
+	 public function insert(Request $request)
+    {
+    	try
+    	{
+    			$validator = Validator::make($request->all(), [
+	            
+	            'name' => 'required',
+	            'email' => 'required',
+	             'password' => 'required',
+	            'role' => 'required',
+	             'mobile' => 'required',
+	           
+	          
+	         ]);
+	        //$validator->errors();
+			if ($validator->fails()) 
+			{
+							$success['responseCode'] = '000';
+							$success['responseMessage'] = "fields are required";
+							return response()->json(['response'=>$success]);            
+						}
+
+						$email=$request->email;
+						$data=user::where('email',$email)->first();
+						if(empty($data))
+						{
+
+						$user= new user;
+			    	
+						    	$user->name=$request->name;
+						    	$user->email=$request->email;
+						    	$user->password=Hash::make($request->password);
+						    	$user->role_id=$request->role;
+						    	$sam=$user->id;
+						    	$user->save();
+
+						    	if($user->save())
+
+						    	{
+						    		$sam=$user->id;
+							    	$stable = new user_profile;
+							    	$stable->user_id=$sam;
+							    	$stable->first_name=$request->first_name;
+							    	$stable->last_name=$request->last_name;
+							    	$stable->email=$request->email;
+							    	$stable->contact_number=$request->mobile;	
+							    	$stable->referal_code=$request->referal_code;
+							    	$stable->password=$request->password;
+							    	//$stable->image=$request->image;
+							    	$stable->fees=$request->fees;
+							    	 $image = $request->file('image');
+                 					$path = public_path(). '/images/';
+                			 		$filename = time() . '.' . $image->getClientOriginalExtension();
+                 					$stable->image=$filename;
+                					$image->move($path, $filename);
+							    	$stable->Status=$request->Status;
+							    	$stable->laboratory_name=$request->laboratory_name;
+							    	$stable->laboratory_Stime=$request->laboratory_Stime;
+							    	$stable->laboratory_Ctime=$request->laboratory_Ctime;
+							    	$stable->laboratory_website=$user->laboratory_website;
+							    	$stable->laboratory_discount=$request->laboratory_discount;
+							    	$stable->doctor_describtion=$request->doctor_describtion;
+							    	$stable->BMCT_balance=$request->BMCT_balance;
+							    	$stable->cash_balance=$request->cash_balance;
+							    	$stable->prescription=$request->prescription;
+							    	$stable->radius=$request->radius;
+							    	$stable->notification=$request->notification;
+							    	
+							    if($stable->save())
+						    	{
+						    		$device = new device;
+
+						    		$device->user_id=$sam;
+						    		$device->device_id=$request->device_id;
+						    		$device->device_token=$request->device_token;
+						    		$device->device_type=$request->device_type;
+						    	if($device->save())
+						    	{
+						    		$address= new address;
+						    		$address->uid=$sam;
+						    		$address->langitude=$request->langitude;
+						    		$address->longitude=$request->longitude;
+						    		$address->longitude=$request->longitude;
+						    		$address->address=$request->address;
+						    		$address->save();
+						    		if($address->save())
+						    		{
+						    			$notification = new notification;
+						    			$notification->uid=$sam;
+						    			$notification->notification="data inserted successfully";
+						    			$notification->save();
+						    		}
+						    	}
+						    	}
+
+						    	$response['responseCode'] =  '200';
+								$response['responseData'] =  '200';
+						   		 $response['responseMessage'] = 'added successfully';          
+						    return response()->json(['response'=>$response], 200);	
+							 
+							    }
+							
+				else{
+
+			  	$response['responseData'] =  '5002';
+			    $response['responseMessage'] = 'data could not be saved';          
+			    return response()->json(['response'=>$response], 5002);	
+			}
+		}
+		
+			else
+			{
+				 $response['responseData'] =  '500';
+			    $response['responseMessage'] = 'email already exist';          
+			    return response()->json(['response'=>$response], 500);	
+
+			}
+	}
+	    catch(Exception $e)
+	    {
+	        return \Response::json(['error'=> ['responseMessage'=>$e->getMessage()]], HttpResponse::HTTP_CONFLICT)->setCallback(Input::get('callback'));
+	    }
+    }
+
+
+
+   /* -------------------------------------------------------------------------------------------------------
+*/
+
+public function login(Request $request)
+    {
+    	try{
+		
+			
+			$validator = Validator::make($request->all(), [				
+				'email' => 'required',				
+				'device_id' => 'required',
+				'password' => 'required'
+			]);
+
+			if ($validator->fails()) {
+				$success['responseCode'] =  '500';
+				$success['responseMessage'] = trans('feild required');
+				return response()->json(['response'=>$success], 500);            
+			}
+			$email=$request->email;
+			$pass=$request->password;
+			/*$data=user::all();
+			dd($data);*/
+			if(Auth::attempt(['email' =>$email, 'password' => $pass])){
+				$user = Auth::user();
+
+				
+				$device_token = $request->device_token;
+				$device_type = $request->device_type;
+				$device_id = $request->device_id;
+				$device_name=$request->device_name;
+
+				if(device::where('device_id',$user->id)->count() == 0){
+						
+							$device = new device;
+							$device->user_id = $user->id;
+							$device->device_token = $device_token;
+							$device->device_type = $device_type;
+							$device->device_name=$device_name;
+							$device->device_id=$device_id;
+							$device->save();
+							
+						}else{		
+
+							$device = device::where(['device_id'=>$user->id])->update(array('device_token'=>$device_token,'device_type'=>$device_type,'device_name'=>$device_name));	
+						}
+				$notification = new notification;
+				$notification->uid=$user->id;
+				$notification->notification="login successful";
+				$notification->save();
+				$response['responseCode'] =  '200';
+				$response['responseData'] =  '200';
+			    $response['responseMessage'] = 'login successfull';          
+			    return response()->json(['response'=>$response], 200);	
+   				 }
+   				 else
+   				 {
+   				 	$response['responseCode'] =  '500';
+				$response['responseData'] =  '500';
+			    $response['responseMessage'] = 'invalid data';          
+			    return response()->json(['response'=>$response], 500);	
+   				 }
+		}
+		catch(Exception $e) {
+            return \Response::json(['error'=> ['responseMessage'=>$e->getMessage()]], HttpResponse::HTTP_CONFLICT)->setCallback(Input::get('callback'));
+            
+        }
+    }
+
+
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+ public function retrive(Request $request)
+    {
+    	try{
+		
+    	
+    			$validator = Validator::make($request->all(), [
+	            
+	            'role' => 'required',
+	            'login_id'=>'required',
+	            
+	          
+	         ]);
+	        //$validator->errors();
+			if ($validator->fails()) 
+			{
+							$success['responseCode'] = '000';
+							$success['responseMessage'] = "fields are required";
+							return response()->json(['response'=>$success]);            
+						}
+							$role_id=0;
+						$role=$request->role;
+						$login_id=$request->login_id;
+						$user=user::where('role_id',$role)->get();
+						foreach($user as $data)
+						$role_id=$data->role_id;
+						if($role_id == '2' or $role_id == '3' or $role_id == '4')
+
+						{
+
+						foreach($user as $data1)
+						{
+						$id=$data1->id;
+						
+						/*if(isset($id))
+						{*/
+
+							$data2=user_profile::where('user_id',$id)->first();
+							if(isset($data2))
+							{
+							//print_r($data2->toArray());
+							$first_name=$data2->first_name;
+							$last_name=$data2->last_name;
+							$image=$data2->image;
+							 
+							$experience=$data2->experience;
+							$detail=$data2->doctor_describtion;
+							$status=$data2->Status;
+			 				$lab_name=$data2->laboratory_name;
+							$start_time=$data2->laboratory_Stime;
+							$end_time=$data2->laboratory_Ctime;
+							$website=$data2->laboratory_website	;
+							$discount=$data2->laboratory_discount;
+							$contact=$data2->contact_number;
+
+						}
+						else
+						{
+							$first_name='null';
+							$last_name='null';
+							$experience='null';
+							$detail='null';
+							$status='null';
+						}
+
+							//print_r('hfwplhf');
+							/*print_r($first_name);
+							print_r($experience);*/
+							$data3=rate::where('uid',$id)->first();
+							if(isset($data3))
+							{
+
+							$rate=$data3->rate;
+						}
+						else
+						{
+							$rate='0';
+						}
+							$data4=address::where('uid',$id)->first();
+							/*if(isset)*/
+							
+							if(isset($data4))
+							{
+								$address=$data4->address;
+							}
+							else
+							{
+								$address='null';
+							}
+							if( $role_id == '2')
+							{
+							$success[]=array(
+									'first_name'=>$first_name,
+									'last_name'=>$last_name,
+									'experience'=>$experience,
+									'detail'=>$detail,
+									'status'=>$status,
+									'rate'=>$rate,
+									'image'=>$image,
+									'address'=>$address
+								);
+						}
+						elseif ($role_id == '3') {
+							$success[]=array(
+									'first_name'=>$first_name,
+									'last_name'=>$last_name,
+									'experience'=>$experience,
+									'detail'=>$detail,
+									'status'=>$status,
+									'image'=>$image,
+									'address'=>$address
+								);
+						}
+						else{
+							$success[]=array(
+		 					'name'=>$lab_name,
+		 					'start_time'=>$start_time,
+		 					'end_time'=>$end_time,
+		 					'website'=>$website,
+		 					'contact'=>$contact,
+		 					'discout'=>$discount
+ 							);
+
+							}
+
+							}
+							if($role_id == '2' )
+							{
+						$notification = new notification;
+						$notification->uid=$login_id;
+						$notification->notification="doctors shown sucessfully";
+						$notification->save();
+					}
+					elseif($role_id == '3')
+					{
+						$notification = new notification;
+						$notification->uid=$login_id;
+						$notification->notification="pharamacists shown sucessfully";
+						$notification->save();
+					}
+					else
+					{
+						$notification = new notification;
+						$notification->uid=$login_id;
+						$notification->notification="laboratorys  shown sucessfully";
+						$notification->save();
+					}
+						$response['responseCode'] =  '200';
+						$response['responseData'] =  $success;
+			    		$response['responseMessage'] = 'data sent';          
+			    		return response()->json(['response'=>$response], 500);	
+						}
+						else
+						{
+							$response['responseCode'] =  '500';
+						$response['responseData'] =  '500';
+			    		$response['responseMessage'] = 'data not found';          
+			    		return response()->json(['response'=>$response], 500);	
+			    		
+						}
+					
+					
+			    	}
+	
+    
+
+		catch(Exception $e) {
+            return \Response::json(['error'=> ['responseMessage'=>$e->getMessage()]], HttpResponse::HTTP_CONFLICT)->setCallback(Input::get('callback'));
+            
+        }
+        }
+
+ 
+
+
+
+ /*----------------------------------------------------------------------------------------------------------*/
+
+
+ 	public function laboratory(Request $request)
+ {
+
+ 			$id=0;
+ 	 		$validator=validator::make($request->all(),
+ 				[
+ 				'role' => 'required',
+ 				'login_id' => 'required'
+				]);
+ 		if($validator->fails())
+ 		{
+			$response['responseCode']= '200';
+			$response['responseData']= '200';
+			$response['responseMessage']='field is required';
+			return response()->json(['response'=>$response]);
+ 		}
+ 			$role=$request->role;
+ 			$login_id=$request->login_id;
+ 			if($role ==4)
+ 			{
+ 			$user = user::where('role_id',$role)->get();
+ 			 foreach($user as $data)
+ 			{
+
+ 			$id=$data->id;
+ 			$data_user = user_profile::where('user_id',$id)->first();
+ 			if(isset($data_user))
+ 			{
+ 				$name=$data_user->laboratory_name;
+ 				$start_time=$data_user->laboratory_Stime;
+ 				$end_time=$data_user->laboratory_Ctime;
+ 				$website=$data_user->laboratory_website	;
+ 				$discount=$data_user->laboratory_discount;
+ 				$contact=$data_user->contact_number;
+
+ 			}
+ 			else
+ 			{
+ 				$name = 'null';
+ 				$start_time = 'null';
+ 				$end_time = 'null';
+ 				$website = 'null';
+ 				$discount = 'null';
+ 				$contact = 'null';
+ 			}
+ 				$success[]=array(
+ 					'name'=>$name,
+ 					'start_time'=>$start_time,
+ 					'end_time'=>$end_time,
+ 					'website'=>$website,
+ 					'contact'=>$contact,
+ 					'discout'=>$discount
+ 					);
+
+ 			}
+
+ 				$notification = new notification;
+				$notification->uid=$login_id;
+				$notification->notification="laboratorys sucessfully shown";
+				$notification->save();
+ 				$response['responseCode']='200';
+ 				$response['responseData']=$success;
+ 				$response['responseMessage']='data sent successfully';
+ 				return response()->json(['response'=>$response]);	
+ 			
+  		}
+ 			else
+			{
+			$response['responseCode'] =  '500';
+			$response['responseData'] =  '500';
+    		$response['responseMessage'] = 'choose laboratory as role';          
+    		return response()->json(['response'=>$response], 500);	
+    		
+			}
+ 		}
+
+
+
+
+/* 		--------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+
+public function treatment(Request $request)
+ {
+
+ 			
+ 	 		$validator=validator::make($request->all(),
+ 				[
+ 				'patient_id' => 'required',
+ 				
+ 				
+				]);
+ 		if($validator->fails())
+ 		{
+			$response['responseCode']= '200';
+			$response['responseData']= '200';
+			$response['responseMessage']='field is required';
+			return response()->json(['response'=>$response]);
+ 		}
+ 			$patient_id=$request->patient_id;
+ 			$doctor_id=$request->doctor_id;
+ 			
+ 			if(isset($patient_id) )
+ 			{
+ 			$user = treatment::where('patient_id',$patient_id)->get();
+ 			foreach($user as $data);
+
+ 			if(isset($data->patient_id))
+ 			{
+ 			 foreach($user as $data1)
+ 			
+ 			{
+ 			
+ 				$patient_id=$data1->patient_id;
+ 				$doctor_id=$data1->doctor_id;
+ 				$date=$data1->date;
+ 				$time=$data1->time	;
+ 				$prescription=$data1->prescription;
+ 				if(isset($doctor_id))
+ 				{
+ 					$users=user::where('id',$doctor_id)->first();
+ 					$name=$users->name;
+
+ 				}
+ 				else
+ 				{
+ 					$response['responseCode'] =  '500';
+					$response['responseData'] =  '500';
+    				$response['responseMessage'] = 'doctor id not found';          
+    				return response()->json(['response'=>$response], 500);	
+ 				}
+ 				$success[]=array(
+ 					'patient_id'=>$patient_id,
+ 					'doctor_name'=>$name,
+
+ 					'date'=>$date,
+ 					'time'=>$time,
+ 					'time'=>$time,
+ 					'prescription'=>$prescription
+ 					);
+
+ 			}
+ 		}
+ 		else
+ 		{
+ 			 	$response['responseCode']='500';
+ 				
+ 				$response['responseMessage']='data inserted invalid';
+ 				return response()->json(['response'=>$response]);	
+ 			
+ 		}
+ 				$notification = new notification;
+				$notification->uid=$patient_id;
+				$notification->notification="treatment history shown";
+				$notification->save();
+ 				$response['responseCode']='200';
+ 				$response['responseData']=$success;
+ 				$response['responseMessage']='data sent successfully';
+ 				return response()->json(['response'=>$response]);	
+ 			
+  		}
+ 			else
+			{
+			$response['responseCode'] =  '500';
+			$response['responseData'] =  '500';
+    		$response['responseMessage'] = 'patient not found';          
+    		return response()->json(['response'=>$response], 500);	
+    		
+			}
+ 		}
+
+
+
+
+  /* --------------------------------------------------------------------------------------------------
+*/
+
+  public function update(Request $request)
+ {
+
+ 	 		$validator=validator::make($request->all(),
+ 				[
+ 				'id' => 'required',
+ 				'first_name' => 'required',
+ 				'last_name'	=> 'required',
+ 				'email' => 'required',
+ 				'contact_number' => 'required',
+ 				'image' => 'required'
+				]);
+ 		if($validator->fails())
+ 		{
+			$response['responseCode']= '200';
+			$response['responseData']= '200';
+			$response['responseMessage']='field is required ';
+			return response()->json(['response'=>$response]);
+ 		}
+ 		$id=$request->id;
+ 		$fname=$request->first_name;
+ 		$lname=$request->last_name;
+ 		$email=$request->email;
+ 		$contact_number= $request->contact_number;
+ 		$image= $request->file('image');
+ 		$user=user::where('email',$email)->first();
+ 		if(empty($user->email))
+ 		{
+ 		$user=user::where('id',$id)->first();
+ 		$uid=$user->id;
+ 		$user->name=$fname;
+ 		$user->email=$email;
+ 		if($user->save())
+ 		{
+ 		$data= user_profile::where('user_id',$uid)->first();
+ 		$data->first_name=$fname;
+ 		$data->last_name=$lname;
+ 		$data->email=$email;
+ 		$data->contact_number=$contact_number;
+ 		$path = public_path(). '/images/';
+ 		$filename = time() . '.' . $image->getClientOriginalExtension();
+		$data->image=$filename;
+		$image->move($path, $filename);
+		if($data->save())
+		{
+			$notification = new notification;
+			$notification->uid=$id;
+			$notification->notification="data updated successfully";
+			$notification->save();
+		}
+	}
+		$success=array(
+				'first_name'=>$fname,
+				'lname'=>$lname,
+				'email'=>$email,
+				'contact_number'=>$contact_number,
+				'image'=>$filename
+
+
+			);
+
+		$response['responseCode']='500';
+		$response['responseData']= $success;
+		$response['responseMessage']='data updated successfully';
+		return response()->json(['response',$response]);
+
+	}
+	else
+	{
+		$response['responseCode']='501';
+		
+		$response['responseMessage']='email address already exist';
+		return response()->json(['response',$response]);
+	}
+}
+
+
+
+
+
+ /*   -------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+ public function fpassword(Request $request)
+ {
+
+	$validator=validator::make($request->all(),
+ 				[
+ 				'id'=> 'required',
+ 				'old_password' => 'required',
+ 				'new_password' => 'required',
+ 				'confirm_password'	=> 'required',
+				]);
+ 		if($validator->fails())
+ 		{
+			$response['responseCode']= '200';
+			$response['responseData']= '200';
+			$response['responseMessage']='field is required ';
+			return response()->json(['response'=>$response]);
+ 		}
+ 		$id=$request->id;
+ 		$old_pass= $request->old_password;
+ 		$new_pass=$request->new_password;
+ 		$confirm_pass=$request->confirm_password;
+ 		$user=user::where('id',$id)->first();
+		if(Hash::check($request->input('old_password'),$user->password))
+		{
+
+		 	if($new_pass === $confirm_pass)
+	 		{
+	 			$user->password =hash::make($new_pass);
+	 			if($user->save())
+	 			{
+ 				$notification = new notification;
+				$notification->uid=$id;
+				$notification->notification="password changed  successfully";
+				$notification->save();
+ 				$response['responseCode']='500';
+				$response['responseMessage']='password changed successfully';
+				return response()->json(['response',$response]);
+ 				}
+	 			else
+	 			{
+	 				$response['responseCode']='501';
+					$response['responseMessage']='password change failed';
+					return response()->json(['response',$response]);
+	 			}
+	 		}
+	 		else
+	 		{
+	 			$response['responseCode']='501';
+				$response['responseMessage']='confirm and new password must be same';
+				return response()->json(['response',$response]);
+ 			}
+ 		}
+ 		else
+ 		{
+
+ 				$response['responseCode']='502';
+				$response['responseMessage']='old password is incorrect';
+				return response()->json(['response',$response]);
+
+ 		}	
+
+ 	}
+ 
+
+
+
+
+ /*------------------------------------------------------------------------------------------------------------------------------*/
+ 	
+	public function social(Request $request)
+	{
+
+		$validator=validator::make($request->all(),
+ 				[
+ 				'social_type' => 'required',
+ 				'social_id' =>'required',
+ 				'email' => 'required',
+ 				'device_id' => 'required',
+ 				'password' => 'required',
+ 				'first_name' => 'required',
+ 				'last_name' =>  'required',
+ 				'email' => 'required',
+ 				'role_id'=>'required',
+ 				'contact_number' => 'required',
+ 				
+				]);
+ 		if($validator->fails())
+ 		{
+			$response['responseCode']= '200';
+			$response['responseData']= '200';
+			$response['responseMessage']='field is required ';
+			return response()->json(['response'=>$response]);
+ 		}
+ 		$id= $request->social_id;
+ 		$type=$request->social_type;
+ 		$email=$request->email;
+ 		$password=$request->password;
+ 		$fname=$request->first_name;
+ 		$lname=$request->last_name;
+ 		$role=$request->role_id;
+ 		$email=$request->email;
+ 		$contact_number=$request->contact_number;
+ 		 $user=user::where('social_id',$id)->first();
+ 		if(isset($user->social_id))
+ 		{
+			if(Auth::attempt(['email' =>$email, 'password' => $password]))
+			{
+
+				$user = Auth::user();
+				$device_token = $request->device_token;
+				$device_type = $request->device_type;
+				$device_id = $request->device_id;
+				$device_name=$request->device_name;
+
+				if(device::where('device_id',$user->id)->count() == 0)
+				{
+
+							$device = new device;
+							$device->user_id = $user->id;
+							$device->device_token = $device_token;
+							$device->device_type = $device_type;
+							$device->device_name=$device_name;
+							$device->device_id=$device_id;
+							$device->save();
+							
+				}
+				else
+					{		
+
+					$device = device::where(['device_id'=>$user->id])->update(array('device_token'=>$device_token,'device_type'=>$device_type,'device_name'=>$device_name));	
+					}
+					$user_id=$user->id;
+					$name=$user->name;
+
+					dd($name);exit();
+					$email=$user->email,
+					$role=$user->role_id;
+					$social_type=$user->social_type;
+					$social_id=$user->social_id;
+					$success = array(
+							'name'=>$name,
+							'email'=>$email,
+							'role'=>$role,
+							'social_type'=>$social_type,
+							'social_id'=>$social_id
+								);
+					print_r($success);exit;
+
+					
+   					 }
+   					 else
+   				 	{
+	   				 $response['responseCode'] =  '500';
+					$response['responseData'] =  '500';
+				    $response['responseMessage'] = 'invalid data';          
+				    return response()->json(['response'=>$response], 500);	
+	   				}
+
+ 			}
+ 			else
+ 			{
+				$user= new user;
+		    	$user->name=$fname;
+		    	$user->email=$email;
+		    	$user->password=Hash::make($password);
+		    	$user->role_id=$role;
+		    	$user->social_type=$type;
+		    	$user->social_id=$id;
+		    	
+		    	
+		    	if($user->save())
+
+		    	{
+		    		$ids=$user->id;
+
+			    	$user_profile = new user_profile;
+			    	$user_profile->user_id=$ids;
+			    	$user_profile->first_name=$fname;
+			    	$user_profile->last_name==$lname;
+			    	$user_profile->email=$email;
+			    	$user_profile->contact_number=$contact_number;	
+			    	$user_profile->referal_code=$request->referal_code;
+			    	$user_profile->password=$password;
+ 				$user_profile->save();
+
+ 				$response['responseCode'] =  '200';
+				$response['responseData'] =  '200';
+				$response['responseMessage'] = 'added successfully';          
+				return response()->json(['response'=>$response], 200);	
+							 
+				 }
+							
+				else{
+
+			  	$response['responseData'] =  '5002';
+			    $response['responseMessage'] = 'data could not be saved';          
+			    return response()->json(['response'=>$response], 5002);	
+			}
+
+		}
+
+	
+ 		}
+ 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+                 					

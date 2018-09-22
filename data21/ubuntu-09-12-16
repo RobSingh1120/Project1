@@ -1,0 +1,324 @@
+﻿############################################################################
+https://salmanwahed.com/127/installing-upwork-on-ubuntu-xenial-xerus/
+Synaptic Package Manager 
+
+sudo apt update && sudo apt install skype
+
+#############
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i --force-depends google-chrome-stable_current_amd64.deb
+sudo apt-get install -f
+###########################
+#############################################################################
+172.16.0.1:8090
+
+smb://172.16.0.75/software
+
+sudo apt-get update
+
+sudo apt-get install lib32z1
+
+wget -O adobe-air.sh http://drive.noobslab.com/data/apps/AdobeAir/adobe-air.sh
+chmod +x adobe-air.sh;sudo ./adobe-air.sh
+sudo apt-get install git
+
+sudo apt-get update  
+sudo apt-get install libgconf2-4 libnss3-1d libxss1
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+
+sudo add-apt-repository -y ppa:webupd8team/sublime-text-3
+sudo apt-get update
+sudo apt-get install sublime-text-installer
+
+############################################################################
+
+http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you//
+
+#############################################################################
+sudo apt-get install adobeair
+###########################################################################################################
+
+IN 12.04
+TO Install 32bit libraries
+
+apt-get install ia32-libs
+
+IN 14.04
+ apt-get install lib32z1
+
+IN 15.10
+sudo apt-get install lib32z1
+#################################################################################
+
+sudo apt-add-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+
+#################################################################################
+'tools.jar' seems to be not in Android Studio classpath.
+
+Check if java JDK is installed correctly
+
+dpkg --list | grep -i jdk
+
+if not install JDK
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update && sudo apt-get install oracle-jdk7-installer
+
+After the installation you have enable the jdk
+
+update-alternatives --display java
+
+Check if Ubuntu uses Java JDK 7
+
+java -version
+
+If all went right the answer should be something like this:
+
+java version “1.7.0_25″
+Java(TM) SE Runtime Environment (build 1.7.0_25-b15)
+Java HotSpot(TM) Server VM (build 23.3-b01, mixed mode)
+
+Check what compiler is used
+
+javac -version
+
+It should show something like this
+
+javac 1.7.0_25
+
+Add JAVA_HOME to environment variable
+
+Edit /etc/environment and add JAVA_HOME=/usr/lib/jvm/java-7-oracle to the end of the file
+
+sudo nano /etc/environment
+
+Append to the end of the file
+
+JAVA_HOME=/usr/lib/jvm/java-7-oracle
+
+If you want to remove oracle JDK
+
+sudo apt-get remove oracle-jdk7-installer
+
+
+
+
+
+#################################################################################################
+
+ELANCE TRACKER
+
+
+14.01
+
+#############################################################
+wget -O adobe-air.sh http://drive.noobslab.com/data/apps/AdobeAir/adobe-air.sh
+chmod +x adobe-air.sh;sudo ./adobe-air.sh
+##################################################################
+
+#sudo apt-get install libhal-storage1 libgnome-keyring0 lib32nss-mdns
+
+2. Download the utility called getlibs-all.deb. Use this command to install it:
+#sudo dpkg -i getlibs-all.deb
+3. Use getlibs to install 32-bit libraries on Ubuntu:
+#sudo getlibs -l libhal-storage.so.1
+#sudo getlibs -l libgnome-keyring.so.0.1.1
+4. link a couple of libraries
+#sudo ln -s /usr/lib/i386-linux-gnu/libgnome-keyring.so.0 /usr/lib/libgnome-keyring.so.0
+5. Now Download Adobe Air 2.6 For Linux
+give executable privilege and run the installer:
+cd ~/Downloads
+#chmod +x AdobeAIRInstaller.bin
+#sudo ./AdobeAIRInstaller.bin
+
+
+######################################################################################################3
+
+How Can I Install Adobe Air on 12.04 64-bit? [duplicate]
+
+For 64bit
+
+In terminal (What is a terminal and how do I open and use it?) copy and paste each command then hit enter one command at a time. sudo commands will ask for a password, type your password and hit enter(there will be no visual indication of typing a password)- if you password does not work: How do I reset a lost administrative password?
+
+    wget http://airdownload.adobe.com/air/lin/download/latest/AdobeAIRInstaller.bin
+
+    sudo chmod +x AdobeAIRInstaller.bin
+
+    sudo ln -s /usr/lib/x86_64-linux-gnu/libgnome-keyring.so.0 /usr/lib/libgnome-keyring.so.0
+    sudo ln -s /usr/lib/x86_64-linux-gnu/libgnome-keyring.so.0.2.0 /usr/lib/libgnome-keyring.so.0.2.0
+    sudo ./AdobeAIRInstaller.bin
+
+
+
+sudo apt-get install adobeair
+########################################################################################
+########################################################################################
+
+
+
+sudo apt-get install alien
+
+sudo -alien -d (file_path)
+
+cd /path-to-directory-that-contains-the-deb-files
+sudo dpkg -i XXX.deb
+
+sudo apt-get install ia32-libs
+
+
+RapidSVN
+#########################################################################################
+Install Google Chrome Browser Command
+
+http://www.cyberciti.biz/faq/how-to-install-google-chrome-in-ubuntu-linux-12-xx-13-xx/
+
+
+Download 32 bit version
+
+Open a terminal (press CTRL-ALT-t and type the following wget command to grab .deb file:
+$ cd /tmp
+$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb
+Download 64 bit version using command line
+
+Open a terminal (press CTRL-ALT-t and type the following wget command to grab .deb file:
+$ cd /tmp
+$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+
+
+
+Step #2: Install .deb file
+
+Type the following command to install 32 bit version:
+$ sudo dpkg -i google-chrome-stable_current_i386.deb
+Type the following command to install 64 bit version:
+$ sudo dpkg -i google-chrome-stable_current_amd64.deb
+
+
+
+
+Step #3: Fixing "errors were encountered while processing" error
+
+Type the following command to fix the error and install Chrome:
+$ sudo apt-get -f install
+
+
+How do I use Google Chrome?
+
+Simply type the following command:
+google-chrome
+google-chrome http://www.cyberciti.biz/
+
+####################################################################################################
+
+
+http://www.umunthu.net/howtos/how-install-skype-ubuntu-1204-lts
+
+How to install Skype in Ubuntu 12.04 LTS
+
+See also new article: How to install Skype 4.3 on Ubuntu 12.04 or Ubuntu 14.04
+
+Quick installation by command line:
+
+Install Skype on Ubuntu 32bit:
+wget -O skype.deb http://download.skype.com/linux/skype-ubuntu_4.0.0.8-1_i386.deb
+sudo apt-get install libxss1; sudo dpkg -i skype.deb
+sudo apt-get -f install && rm skype.deb
+
+Install Skype on Ubuntu 64bit:
+wget -O skype.deb http://download.skype.com/linux/skype-ubuntu_4.0.0.8-1_amd64.deb
+sudo apt-get install libxss1 lib32stdc++6 lib32asound2 ia32-libs libc6-i386 lib32gcc1; sudo dpkg -i skype.deb
+sudo apt-get -f install && rm skype.deb
+
+######################################################################################################33
+
+
+https://www.digitalocean.com/community/tutorials/how-to-install-java-on-ubuntu-with-apt-get
+
+
+How To Install Java on Ubuntu with Apt-Get
+
+Installing Java with apt-get is easy. First, update the package index:
+
+sudo apt-get update
+
+Then, check if Java is not already installed:
+
+java -version
+
+If it returns "The program java can be found in the following packages", Java hasn't been installed yet, so execute the following command:
+
+sudo apt-get install default-jre
+
+This will install the Java Runtime Environment (JRE). If you instead need the Java Development Kit (JDK), which is usually needed to compile Java applications (for example Apache Ant, Apache Maven, Eclipse and IntelliJ IDEA execute the following command:
+
+sudo apt-get install default-jdk
+
+
+########################################################################################
+
+https://www.liberiangeek.net/2013/08/apache-openoffice-4-0-releasedheres-how-to-install-it-in-ubuntu/
+Apache OpenOffice 4.0 Released–Here’s How To Install It In Ubuntu
+
+
+sudo apt-get remove --purge libreoffice* libexttextcat-data* && sudo apt-get autoremove
+
+ 
+
+Next, change into the /tmp directory to download OpenOffice file.
+
+cd /tmp
+
+ 
+
+When you’re there, run the commands below to download the latest version (32-bit English) of OpenOffice. To view the download page and select other languages, use this page.
+
+wget http://sourceforge.net/projects/openofficeorg.mirror/files/4.0.0/binaries/en-US/Apache_OpenOffice_4.0.0_Linux_x86_install-deb_en-US.tar.gz
+
+ 
+
+For 64-bit English version, use this link.
+
+wget http://sourceforge.net/projects/openofficeorg.mirror/files/4.0.0/binaries/en-US/Apache_OpenOffice_4.0.0_Linux_x86-64_install-deb_en-US.tar.gz
+
+ 
+
+When the file is downloaded, run the commands below to extract the downloaded file.
+
+tar -xvf Apache_OpenOffice*.tar.gz
+
+ 
+
+Next, run the commands below to begin installing it.
+
+sudo dpkg -i en-US/DEBS/*.deb
+
+ 
+
+Next, run the commands below to install the desktop-integration for .deb Linux distributions.
+
+sudo dpkg -i en-US/DEBS/desktop-integration/*.deb
+
+
+restart
+
+To revert the change and reinstall LibreOffice, run the commands below to completely remove Apache OpenOffice.
+
+sudo apt-get purge openoffice*.* && sudo apt-get autoremove
+
+ 
+
+Then install LibreOffice by running the commands below.
+
+sudo apt-get install libreoffice libreoffice-gnome
+######################################################################################################3
+###########################################################################################################
+
+
+Files Downloading
+
+DONT shout down Laptop
+
+

@@ -1,0 +1,155 @@
+Index: views_attach_plugin_display_node_content.inc
+===================================================================
+RCS file: /cvs/drupal/contributions/modules/views_attach/views_attach_plugin_display_node_content.inc,v
+retrieving revision 1.1.2.7.2.7
+diff -u -r1.1.2.7.2.7 views_attach_plugin_display_node_content.inc
+--- views_attach_plugin_display_node_content.inc	2 Oct 2009 21:12:01 -0000	1.1.2.7.2.7
++++ views_attach_plugin_display_node_content.inc	2 Mar 2010 22:43:50 -0000
+@@ -87,7 +87,7 @@
+           '#multiple' => TRUE,
+           '#required' => TRUE,
+           '#title' => t("Embed this display in the following node types"),
+-          '#options' => node_get_types('names'),
++          '#options' => node_type_get_names(),
+           '#default_value' => $this->get_option('types'),
+         );
+         break;
+Index: views_attach.module
+===================================================================
+RCS file: /cvs/drupal/contributions/modules/views_attach/views_attach.module,v
+retrieving revision 1.1.2.9.2.8
+diff -u -r1.1.2.9.2.8 views_attach.module
+--- views_attach.module	26 Jun 2009 20:58:13 -0000	1.1.2.9.2.8
++++ views_attach.module	2 Mar 2010 22:43:49 -0000
+@@ -6,7 +6,7 @@
+  */
+ function views_attach_views_api() {
+   return array(
+-    'api' => 2.0,
++    'api' => 3.0,
+   );
+ }
+ 
+@@ -71,8 +71,7 @@
+               '#title' => $view->get_title(),
+             );
+             $account->content[$view->name . '_' . $info['display']]['content'] = array(
+-              '#type' => 'markup',
+-              '#value' => $result,
++                '#markup' => $result,
+             );
+           }
+         }
+@@ -81,42 +80,39 @@
+ }
+ 
+ /**
+- * Implementation of hook_nodeapi().
++ * Implementation of hook_node_view
+  */
+-function views_attach_nodeapi(&$node, $op, $teaser, $page) {
+-  switch ($op) {
+-    case 'view':
+-      // A side effect of defining it this way is that if we're called for an
+-      // embedded node, with no teaser or page, we use the full version's settings.
+-      // That is by design.
+-
+-      if (isset($node->build_mode)) {
+-        $mode = $node->build_mode;
+-        if ($mode === NODE_BUILD_NORMAL) {
+-          $mode = $teaser ? 'teaser' : 'full';
+-        }
+-      }
+-      else {
+-        $mode = 'full';
+-      }
+-
+-      $views = views_attach_get_node_views($node->type, $mode);
+-      foreach ($views as $info) {
+-        $view = views_get_view($info['name']);
+-        $view->set_display($info['display']);
+-        
+-        if ($view->access($info['display'])) {
+-          $view->current_node = $node;
+-          $result = $view->execute_display($info['display']);
+-          if (!empty($result)) {
+-            $node->content[$view->name . '_' . $info['display']] = array(
+-              '#weight' => module_exists('content') ? content_extra_field_weight($node->type, $view->name . '_' . $info['display']) : 10,
+-              '#value' => $result,
+-            );
+-          }
+-        }
++function views_attach_node_view(&$node, $view_mode) {
++  // A side effect of defining it this way is that if we're called for an
++  // embedded node, with no teaser or page, we use the full version's settings.
++  // That is by design.
++
++//  if (isset($node->build_mode)) {
++//    $mode = $node->build_mode;
++//    if ($mode === NODE_BUILD_NORMAL) {
++//      $mode = $teaser ? 'teaser' : 'full';
++//    }
++//  } else {
++//    $mode = 'full';
++//  }
++  $mode=$view_mode;
++
++  $views = views_attach_get_node_views($node->type, $mode);
++  foreach ($views as $info) {
++    $view = views_get_view($info['name']);
++    $view->set_display($info['display']);
++
++    if ($view->access($info['display'])) {
++      $view->current_node = $node;
++      $result = $view->execute_display($info['display']);
++      if (!empty($result)) {
++        $node->content[$view->name . '_' . $info['display']] = array(
++              '#weight' => 10, //module_exists('content') ? content_extra_field_weight($node->type, $view->name . '_' . $info['display']) : 10,
++              '#markup' => $result,
++        );
+       }
+-      break;
++    }
++    break;
+   }
+ }
+ 
+@@ -258,8 +254,8 @@
+ }
+ 
+ /**
+-* Implementation of hook_form_alter().
+-*/
++ * Implementation of hook_form_alter().
++ */
+ function views_attach_form_alter(&$form, $form_state, $form_id) {
+   if($form['#id'] == 'node-form') {
+     $views = views_attach_get_node_views($form['type']['#value'], 'edit');
+@@ -277,4 +273,4 @@
+       }
+     }
+   }
+-}
++}
+\ No newline at end of file
+Index: views_attach.info
+===================================================================
+RCS file: /cvs/drupal/contributions/modules/views_attach/views_attach.info,v
+retrieving revision 1.1.2.1.2.2
+diff -u -r1.1.2.1.2.2 views_attach.info
+--- views_attach.info	25 Jun 2009 20:21:12 -0000	1.1.2.1.2.2
++++ views_attach.info	2 Mar 2010 22:43:49 -0000
+@@ -1,7 +1,11 @@
+ ; $Id: views_attach.info,v 1.1.2.1.2.2 2009/06/25 20:21:12 eaton Exp $
+ name = Views attach
+-description = Provides new Views display types that can be attached to nodes or users.
+-core = 6.x
++description = Provides new Views display types that can be attached to nodes or users. 
++core = 7.x
+ dependencies[] = views
+ suggests[] = token
+ package = Views
++files[]=views_attach_plugin_display_node_content.inc
++files[]=views_attach_plugin_display_profile.inc
++files[]=views_attach.views.inc
++files[]=views_attach.module
